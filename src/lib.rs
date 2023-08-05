@@ -14,7 +14,7 @@ mod test {
         }]);
 
         let s = serde_json::to_string(&list).unwrap();
-        println!("{}", s);
+        assert_eq!(s, r#"[{"id":1,"name":"abc"}]"#);
     }
 
     #[test]

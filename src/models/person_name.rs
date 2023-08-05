@@ -5,19 +5,16 @@ use std::ops::Deref;
 pub struct PersonName(String);
 
 impl PersonName {
-    pub fn new(value: String) -> Self {
-        Self(value)
+    pub fn new(value: impl ToString) -> Self {
+        Self(value.to_string())
     }
 }
 
-impl From<&str> for PersonName {
-    fn from(value: &str) -> Self {
-        PersonName::new(value.to_string())
-    }
-}
-
-impl From<String> for PersonName {
-    fn from(value: String) -> Self {
+impl<T> From<T> for PersonName
+where
+    T: ToString,
+{
+    fn from(value: T) -> Self {
         PersonName::new(value)
     }
 }
