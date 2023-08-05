@@ -19,7 +19,7 @@ mod test {
     use crate::models::*;
 
     #[test]
-    fn t() {
+    fn test_1() {
         let id = 2.into();
         let name = "Y".into();
 
@@ -28,8 +28,8 @@ mod test {
 
         let list = select_person_list();
         for item in list.iter() {
-            let id: usize = *item.id;
-            let name: &str = &item.name;
+            let id = *item.id;
+            let name = &item.name;
         }
     }
 }
