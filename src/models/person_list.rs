@@ -4,28 +4,28 @@ use std::ops::Deref;
 use super::Person;
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct PersonList<'l>(#[serde(borrow)] Vec<Person<'l>>);
+pub struct PersonList(Vec<Person>);
 
-impl<'l> PersonList<'l> {
-    pub fn new(value: Vec<Person<'l>>) -> Self {
+impl PersonList {
+    pub fn new(value: Vec<Person>) -> Self {
         Self(value)
     }
 }
 
-impl<'l> From<Vec<Person<'l>>> for PersonList<'l> {
-    fn from(value: Vec<Person<'l>>) -> Self {
+impl From<Vec<Person>> for PersonList {
+    fn from(value: Vec<Person>) -> Self {
         PersonList::new(value)
     }
 }
 
-impl<'l> From<PersonList<'l>> for Vec<Person<'l>> {
-    fn from(value: PersonList<'l>) -> Self {
+impl From<PersonList> for Vec<Person> {
+    fn from(value: PersonList) -> Self {
         value.0
     }
 }
 
-impl<'l> Deref for PersonList<'l> {
-    type Target = Vec<Person<'l>>;
+impl Deref for PersonList {
+    type Target = Vec<Person>;
 
     fn deref(&self) -> &Self::Target {
         &self.0

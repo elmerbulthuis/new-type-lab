@@ -2,30 +2,36 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct PersonName<'l>(&'l str);
+pub struct PersonName(String);
 
-impl<'l> PersonName<'l> {
-    pub fn new(value: &'l str) -> Self {
+impl PersonName {
+    pub fn new(value: String) -> Self {
         Self(value)
     }
 }
 
-impl<'l> From<&'l str> for PersonName<'l> {
-    fn from(value: &'l str) -> Self {
+impl From<&str> for PersonName {
+    fn from(value: &str) -> Self {
+        PersonName::new(value.to_string())
+    }
+}
+
+impl From<String> for PersonName {
+    fn from(value: String) -> Self {
         PersonName::new(value)
     }
 }
 
-impl<'l> From<PersonName<'l>> for &'l str {
-    fn from(value: PersonName<'l>) -> Self {
+impl From<PersonName> for String {
+    fn from(value: PersonName) -> Self {
         value.0
     }
 }
 
-impl<'l> Deref for PersonName<'l> {
+impl Deref for PersonName {
     type Target = str;
 
     fn deref(&self) -> &Self::Target {
-        self.0
+        self.0.as_str()
     }
 }
