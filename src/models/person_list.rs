@@ -1,9 +1,10 @@
-use core::slice::Iter;
+use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::Person;
 
-pub struct PersonList<'l>(Vec<Person<'l>>);
+#[derive(Serialize, Deserialize, Clone)]
+pub struct PersonList<'l>(#[serde(borrow)] Vec<Person<'l>>);
 
 impl<'l> PersonList<'l> {
     pub fn new(value: Vec<Person<'l>>) -> Self {

@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
+#[derive(Serialize, Deserialize, Clone)]
 pub struct PersonId(usize);
 
 impl PersonId {

@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
+#[derive(Serialize, Deserialize, Clone)]
 pub struct PersonName<'l>(&'l str);
 
 impl<'l> PersonName<'l> {
