@@ -7,7 +7,6 @@
 	"editor.rulers": [100],
 	"rust-analyzer.check.command": "clippy",
 	"rust-analyzer.cargo.features": [
-		"deref",
 		"as_ref"
 	]
 }
