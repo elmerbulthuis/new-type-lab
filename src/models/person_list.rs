@@ -8,8 +8,8 @@ use super::Person;
 pub struct PersonList(Vec<Person>);
 
 impl PersonList {
-    fn new(value: impl IntoIterator<Item = Person>) -> Self {
-        Self(value.into_iter().collect())
+    fn new(value: Vec<Person>) -> Result<Self, ()> {
+        Ok(Self(value.into_iter().collect()))
     }
 }
 
@@ -18,7 +18,7 @@ where
     T: IntoIterator<Item = Person>,
 {
     fn from(value: T) -> Self {
-        Self::new(value)
+        Self::new(value.into_iter().collect()).unwrap()
     }
 }
 

@@ -6,8 +6,8 @@ use std::ops::Deref;
 pub struct PersonName(String);
 
 impl PersonName {
-    fn new(value: impl ToString) -> Self {
-        Self(value.to_string())
+    fn new(value: String) -> Result<Self, ()> {
+        Ok(Self(value))
     }
 }
 
@@ -16,7 +16,7 @@ where
     T: ToString,
 {
     fn from(value: T) -> Self {
-        Self::new(value)
+        Self::new(value.to_string()).unwrap()
     }
 }
 

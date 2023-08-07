@@ -6,14 +6,14 @@ use std::ops::Deref;
 pub struct PersonId(usize);
 
 impl PersonId {
-    fn new(value: usize) -> Self {
-        Self(value)
+    fn new(value: usize) -> Result<Self, ()> {
+        Ok(Self(value))
     }
 }
 
 impl From<usize> for PersonId {
     fn from(value: usize) -> Self {
-        Self::new(value)
+        Self::new(value).unwrap()
     }
 }
 
