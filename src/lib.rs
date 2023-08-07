@@ -8,7 +8,7 @@ mod test {
 
     #[test]
     fn test_1() {
-        let list = PersonList::new(vec![Person {
+        let list = PersonList::new([Person {
             id: 1.into(),
             name: "abc".into(),
         }]);
