@@ -18,7 +18,7 @@ where
     T: IntoIterator<Item = Person>,
 {
     fn from(value: T) -> Self {
-        PersonList::new(value)
+        Self::new(value)
     }
 }
 

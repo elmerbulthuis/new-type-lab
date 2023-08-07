@@ -13,7 +13,7 @@ impl PersonId {
 
 impl From<usize> for PersonId {
     fn from(value: usize) -> Self {
-        PersonId::new(value)
+        Self::new(value)
     }
 }
 

@@ -16,7 +16,7 @@ where
     T: ToString,
 {
     fn from(value: T) -> Self {
-        PersonName::new(value)
+        Self::new(value)
     }
 }
 
