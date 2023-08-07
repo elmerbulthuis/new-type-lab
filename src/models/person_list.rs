@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "deref")]
 use std::ops::Deref;
 
 use super::Person;
@@ -24,10 +25,18 @@ impl From<PersonList> for Vec<Person> {
     }
 }
 
+#[cfg(feature = "deref")]
 impl Deref for PersonList {
     type Target = Vec<Person>;
 
     fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[cfg(feature = "as_ref")]
+impl AsRef<Vec<Person>> for PersonList {
+    fn as_ref(&self) -> &Vec<Person> {
         &self.0
     }
 }
