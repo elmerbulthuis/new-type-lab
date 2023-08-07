@@ -6,7 +6,7 @@ use std::ops::Deref;
 pub struct PersonId(usize);
 
 impl PersonId {
-    pub fn new(value: usize) -> Self {
+    fn new(value: usize) -> Self {
         Self(value)
     }
 }

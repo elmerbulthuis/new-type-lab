@@ -64,3 +64,13 @@ for item in list.0.iter() {
     assert_eq!(name, "abc");
 }
 ```
+
+Another interesting thought is that one of the reasons to have new type is also to hide implementation details. Also the wrapped type is not the same as the new type, this is the whole idea of the new type concept.
+
+For instance, we could create a special id type, that has a value. The value is at some point a number that is always greater than 0, internally this value is stored as an `u16`. Some day we might decide that the number should be stored as an `u8` there is not problem doing this with the new-type. That is, unless when we implement the deref trait! We can only dereference to one type, changing the type could break code in many places.
+
+If we would use `AsRef` for this then we could support `u8` and `u16` at the same time. We can keep the api backwards compatible.
+
+`Deref` dereferences the thing, but in the new type case, there is nothing to dereference. We are dealing with a new type that has it's own way of storing data. An id is not the same as any number! We might perceive it as such, but it's not the same.
+
+Also creating new-types via new might also not really fit this idea. We could make the new functions private.

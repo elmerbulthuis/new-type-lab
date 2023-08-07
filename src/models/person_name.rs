@@ -6,7 +6,7 @@ use std::ops::Deref;
 pub struct PersonName(String);
 
 impl PersonName {
-    pub fn new(value: impl ToString) -> Self {
+    fn new(value: impl ToString) -> Self {
         Self(value.to_string())
     }
 }

@@ -8,7 +8,7 @@ use super::Person;
 pub struct PersonList(Vec<Person>);
 
 impl PersonList {
-    pub fn new(value: impl IntoIterator<Item = Person>) -> Self {
+    fn new(value: impl IntoIterator<Item = Person>) -> Self {
         Self(value.into_iter().collect())
     }
 }
