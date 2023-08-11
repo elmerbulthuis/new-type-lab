@@ -14,7 +14,7 @@ impl OrganizationType {
         if instance.validate() {
             Ok(instance)
         } else {
-            Err(ValidationError::new("EntityList"))
+            Err(ValidationError::new("OrganizationType"))
         }
     }
 
