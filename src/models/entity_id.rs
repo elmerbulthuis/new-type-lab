@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
-use serde::{Deserialize, Serialize};
+use serde::{de::Visitor, Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct EntityId(usize);
 
 impl EntityId {
@@ -21,6 +21,15 @@ impl EntityId {
         }
 
         true
+    }
+}
+
+impl<'de> Deserialize<'de> for EntityId {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_u64(EntityIdVisitor)
     }
 }
 
@@ -66,5 +75,48 @@ impl std::ops::Deref for EntityId {
 impl AsRef<usize> for EntityId {
     fn as_ref(&self) -> &usize {
         &self.0
+    }
+}
+
+struct EntityIdVisitor;
+
+impl<'de> Visitor<'de> for EntityIdVisitor {
+    type Value = EntityId;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("expecting entity id")
+    }
+
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        let v: usize = v
+            .try_into()
+            .map_err(|_| E::custom("entity name deserialization failed"))?;
+
+        v.try_into()
+            .map_err(|_| E::custom("entity name deserialization failed"))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use super::EntityId;
+
+    #[test]
+    fn test_1() {
+        let serialized = json!(1);
+        let deserialized: Result<EntityId, _> = serde_json::from_value(serialized);
+        let deserialized = deserialized.unwrap();
+
+        assert_eq!(*deserialized.as_ref(), 1);
+
+        let serialized = json!(0);
+        let deserialized: Result<EntityId, _> = serde_json::from_value(serialized);
+
+        assert!(deserialized.is_err());
     }
 }

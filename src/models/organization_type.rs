@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
-use serde::{Deserialize, Serialize};
+use serde::{de::Visitor, Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct OrganizationType(String);
 
 impl OrganizationType {
@@ -21,6 +21,15 @@ impl OrganizationType {
         }
 
         true
+    }
+}
+
+impl<'de> Deserialize<'de> for OrganizationType {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_string(OrganizationTypeVisitor)
     }
 }
 
@@ -65,5 +74,45 @@ impl std::ops::Deref for OrganizationType {
 impl AsRef<str> for OrganizationType {
     fn as_ref(&self) -> &str {
         self.0.as_str()
+    }
+}
+
+struct OrganizationTypeVisitor;
+
+impl<'de> Visitor<'de> for OrganizationTypeVisitor {
+    type Value = OrganizationType;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("expecting entity name")
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        let v = v.to_string();
+        v.try_into()
+            .map_err(|_| E::custom("entity name deserialization failed"))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use super::OrganizationType;
+
+    #[test]
+    fn test_1() {
+        let serialized = json!("organization");
+        let deserialized: Result<OrganizationType, _> = serde_json::from_value(serialized);
+        let deserialized = deserialized.unwrap();
+
+        assert_eq!(deserialized.as_ref(), "organization");
+
+        let serialized = json!("something else");
+        let deserialized: Result<OrganizationType, _> = serde_json::from_value(serialized);
+
+        assert!(deserialized.is_err());
     }
 }

@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
-use serde::{Deserialize, Serialize};
+use serde::{de::Visitor, Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct EntityName(String);
 
 impl EntityName {
@@ -21,6 +21,15 @@ impl EntityName {
         }
 
         true
+    }
+}
+
+impl<'de> Deserialize<'de> for EntityName {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_string(EntityNameVisitor)
     }
 }
 
@@ -65,5 +74,45 @@ impl std::ops::Deref for EntityName {
 impl AsRef<str> for EntityName {
     fn as_ref(&self) -> &str {
         self.0.as_str()
+    }
+}
+
+struct EntityNameVisitor;
+
+impl<'de> Visitor<'de> for EntityNameVisitor {
+    type Value = EntityName;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("expecting entity name")
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        let v = v.to_string();
+        v.try_into()
+            .map_err(|_| E::custom("entity name deserialization failed"))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use super::EntityName;
+
+    #[test]
+    fn test_1() {
+        let serialized = json!("a");
+        let deserialized: Result<EntityName, _> = serde_json::from_value(serialized);
+        let deserialized = deserialized.unwrap();
+
+        assert_eq!(deserialized.as_ref(), "a");
+
+        let serialized = json!("");
+        let deserialized: Result<EntityName, _> = serde_json::from_value(serialized);
+
+        assert!(deserialized.is_err());
     }
 }
