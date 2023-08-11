@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 pub struct Person {
+    pub r#type: PersonType,
     pub id: EntityId,
     pub name: EntityName,
-    pub r#type: PersonType,
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
