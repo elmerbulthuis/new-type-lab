@@ -71,9 +71,9 @@ impl AsRef<str> for EntityName {
 
 #[cfg(test)]
 mod test {
-    use serde_json::json;
-
-    use super::EntityName;
+    use super::*;
+    use serde_json::{json, Deserializer};
+    use std::io::{Cursor, Write};
 
     #[test]
     fn test_1() {
@@ -87,5 +87,27 @@ mod test {
         let deserialized: Result<EntityName, _> = serde_json::from_value(serialized);
 
         assert!(deserialized.is_err());
+    }
+
+    #[test]
+    fn test_reader() {
+        let mut buffer: Vec<u8> = Vec::new();
+        let mut cursor = Cursor::new(&mut buffer);
+
+        let serialized = r#""a""b""#;
+        cursor.write_all(serialized.as_bytes()).unwrap();
+        cursor.set_position(0);
+
+        let mut deserializer = Deserializer::from_reader(cursor);
+
+        let deserialized = EntityName::deserialize(&mut deserializer);
+        let deserialized = deserialized.unwrap();
+
+        assert_eq!(deserialized.as_ref(), "a");
+
+        let deserialized = EntityName::deserialize(&mut deserializer);
+        let deserialized = deserialized.unwrap();
+
+        assert_eq!(deserialized.as_ref(), "b");
     }
 }
