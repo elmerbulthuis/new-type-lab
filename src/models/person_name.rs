@@ -1,22 +1,32 @@
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "deref")]
-use std::ops::Deref;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct PersonName(String);
 
 impl PersonName {
     fn new(value: String) -> Result<Self, ()> {
-        Ok(Self(value))
+        let instance = Self(value);
+        if instance.validate() {
+            Ok(instance)
+        } else {
+            Err(())
+        }
+    }
+
+    fn validate(&self) -> bool {
+        if self.0.is_empty() {
+            return false;
+        }
+
+        true
     }
 }
 
-impl<T> From<T> for PersonName
-where
-    T: ToString,
-{
-    fn from(value: T) -> Self {
-        Self::new(value.to_string()).unwrap()
+impl TryFrom<String> for PersonName {
+    type Error = ();
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::new(value)
     }
 }
 
@@ -27,7 +37,7 @@ impl From<PersonName> for String {
 }
 
 #[cfg(feature = "deref")]
-impl Deref for PersonName {
+impl std::ops::Deref for PersonName {
     type Target = str;
 
     fn deref(&self) -> &Self::Target {

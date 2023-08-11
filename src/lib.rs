@@ -8,10 +8,11 @@ mod test {
 
     #[test]
     fn test_1() {
-        let list = PersonList::from([Person {
-            id: 1.into(),
-            name: "abc".into(),
-        }]);
+        let list = PersonList::try_from(vec![Person {
+            id: 1.try_into().unwrap(),
+            name: "abc".to_string().try_into().unwrap(),
+        }])
+        .unwrap();
 
         let s = serde_json::to_string(&list).unwrap();
         assert_eq!(s, r#"[{"id":1,"name":"abc"}]"#);

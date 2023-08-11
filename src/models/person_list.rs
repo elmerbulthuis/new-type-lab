@@ -1,6 +1,4 @@
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "deref")]
-use std::ops::Deref;
 
 use super::Person;
 
@@ -9,16 +7,28 @@ pub struct PersonList(Vec<Person>);
 
 impl PersonList {
     fn new(value: Vec<Person>) -> Result<Self, ()> {
-        Ok(Self(value.into_iter().collect()))
+        let instance = Self(value);
+        if instance.validate() {
+            Ok(instance)
+        } else {
+            Err(())
+        }
+    }
+
+    fn validate(&self) -> bool {
+        if self.0.is_empty() {
+            return false;
+        }
+
+        true
     }
 }
 
-impl<T> From<T> for PersonList
-where
-    T: IntoIterator<Item = Person>,
-{
-    fn from(value: T) -> Self {
-        Self::new(value.into_iter().collect()).unwrap()
+impl TryFrom<Vec<Person>> for PersonList {
+    type Error = ();
+
+    fn try_from(value: Vec<Person>) -> Result<Self, Self::Error> {
+        Self::new(value.into_iter().collect())
     }
 }
 
@@ -29,7 +39,7 @@ impl From<PersonList> for Vec<Person> {
 }
 
 #[cfg(feature = "deref")]
-impl Deref for PersonList {
+impl std::ops::Deref for PersonList {
     type Target = Vec<Person>;
 
     fn deref(&self) -> &Self::Target {

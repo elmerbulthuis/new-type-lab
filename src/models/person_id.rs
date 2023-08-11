@@ -1,19 +1,32 @@
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "deref")]
-use std::ops::Deref;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct PersonId(usize);
 
 impl PersonId {
     fn new(value: usize) -> Result<Self, ()> {
-        Ok(Self(value))
+        let instance = Self(value);
+        if instance.validate() {
+            Ok(instance)
+        } else {
+            Err(())
+        }
+    }
+
+    pub fn validate(&self) -> bool {
+        if self.0 == 0 {
+            return false;
+        }
+
+        true
     }
 }
 
-impl From<usize> for PersonId {
-    fn from(value: usize) -> Self {
-        Self::new(value).unwrap()
+impl TryFrom<usize> for PersonId {
+    type Error = ();
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        Self::new(value)
     }
 }
 
@@ -24,7 +37,7 @@ impl From<PersonId> for usize {
 }
 
 #[cfg(feature = "deref")]
-impl Deref for PersonId {
+impl std::ops::Deref for PersonId {
     type Target = usize;
 
     fn deref(&self) -> &Self::Target {
