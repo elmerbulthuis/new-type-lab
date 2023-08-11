@@ -3,9 +3,9 @@ use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct PersonId(usize);
+pub struct EntityId(usize);
 
-impl PersonId {
+impl EntityId {
     fn new(value: usize) -> Result<Self, ()> {
         let instance = Self(value);
         if instance.validate() {
@@ -24,7 +24,7 @@ impl PersonId {
     }
 }
 
-impl TryFrom<usize> for PersonId {
+impl TryFrom<usize> for EntityId {
     type Error = ();
 
     fn try_from(value: usize) -> Result<Self, Self::Error> {
@@ -32,13 +32,13 @@ impl TryFrom<usize> for PersonId {
     }
 }
 
-impl From<PersonId> for usize {
-    fn from(value: PersonId) -> Self {
+impl From<EntityId> for usize {
+    fn from(value: EntityId) -> Self {
         value.0
     }
 }
 
-impl FromStr for PersonId {
+impl FromStr for EntityId {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -47,14 +47,14 @@ impl FromStr for PersonId {
     }
 }
 
-impl ToString for PersonId {
+impl ToString for EntityId {
     fn to_string(&self) -> String {
         self.0.to_string()
     }
 }
 
 #[cfg(feature = "deref")]
-impl std::ops::Deref for PersonId {
+impl std::ops::Deref for EntityId {
     type Target = usize;
 
     fn deref(&self) -> &Self::Target {
@@ -63,7 +63,7 @@ impl std::ops::Deref for PersonId {
 }
 
 #[cfg(feature = "as_ref")]
-impl AsRef<usize> for PersonId {
+impl AsRef<usize> for EntityId {
     fn as_ref(&self) -> &usize {
         &self.0
     }

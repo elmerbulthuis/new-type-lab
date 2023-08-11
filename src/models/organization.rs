@@ -1,10 +1,10 @@
-use super::{OrganizationId, OrganizationName, OrganizationType};
+use super::{EntityId, EntityName, OrganizationType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 pub struct Organization {
-    pub id: OrganizationId,
-    pub name: OrganizationName,
+    pub id: EntityId,
+    pub name: EntityName,
     pub r#type: OrganizationType,
 }
 
