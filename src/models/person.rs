@@ -1,10 +1,11 @@
-use super::{PersonId, PersonName};
+use super::{PersonId, PersonName, PersonType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 pub struct Person {
     pub id: PersonId,
     pub name: PersonName,
+    pub r#type: PersonType,
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
