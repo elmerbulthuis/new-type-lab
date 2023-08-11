@@ -10,8 +10,10 @@ mod test {
     fn test_1() {
         let list = PersonList::try_from(vec![Person {
             id: 1.try_into().unwrap(),
-            name: "abc".to_string().try_into().unwrap(),
-        }])
+            name: "abc".parse().unwrap(),
+        }
+        .try_into()
+        .unwrap()])
         .unwrap();
 
         let s = serde_json::to_string(&list).unwrap();
@@ -36,6 +38,7 @@ mod test {
 
         #[cfg(feature = "as_ref")]
         for item in list.as_ref().iter() {
+            let item = item.as_ref();
             let id = *item.id.as_ref();
             let name = item.name.as_ref();
 

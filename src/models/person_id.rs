@@ -1,6 +1,8 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct PersonId(usize);
 
 impl PersonId {
@@ -33,6 +35,21 @@ impl TryFrom<usize> for PersonId {
 impl From<PersonId> for usize {
     fn from(value: PersonId) -> Self {
         value.0
+    }
+}
+
+impl FromStr for PersonId {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let value = s.parse().map_err(|_error| ())?;
+        Self::new(value)
+    }
+}
+
+impl ToString for PersonId {
+    fn to_string(&self) -> String {
+        self.0.to_string()
     }
 }
 

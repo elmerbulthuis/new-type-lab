@@ -1,6 +1,8 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct PersonName(String);
 
 impl PersonName {
@@ -33,6 +35,20 @@ impl TryFrom<String> for PersonName {
 impl From<PersonName> for String {
     fn from(value: PersonName) -> Self {
         value.0
+    }
+}
+
+impl FromStr for PersonName {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::new(s.to_string())
+    }
+}
+
+impl ToString for PersonName {
+    fn to_string(&self) -> String {
+        self.0.to_string()
     }
 }
 

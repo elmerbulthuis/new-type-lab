@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-use super::Person;
+use super::PersonContainer;
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct PersonList(Vec<Person>);
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+pub struct PersonList(Vec<PersonContainer>);
 
 impl PersonList {
-    fn new(value: Vec<Person>) -> Result<Self, ()> {
+    fn new(value: Vec<PersonContainer>) -> Result<Self, ()> {
         let instance = Self(value);
         if instance.validate() {
             Ok(instance)
@@ -24,15 +24,15 @@ impl PersonList {
     }
 }
 
-impl TryFrom<Vec<Person>> for PersonList {
+impl TryFrom<Vec<PersonContainer>> for PersonList {
     type Error = ();
 
-    fn try_from(value: Vec<Person>) -> Result<Self, Self::Error> {
+    fn try_from(value: Vec<PersonContainer>) -> Result<Self, Self::Error> {
         Self::new(value.into_iter().collect())
     }
 }
 
-impl From<PersonList> for Vec<Person> {
+impl From<PersonList> for Vec<PersonContainer> {
     fn from(value: PersonList) -> Self {
         value.0
     }
@@ -40,7 +40,7 @@ impl From<PersonList> for Vec<Person> {
 
 #[cfg(feature = "deref")]
 impl std::ops::Deref for PersonList {
-    type Target = Vec<Person>;
+    type Target = Vec<PersonContainer>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -48,8 +48,8 @@ impl std::ops::Deref for PersonList {
 }
 
 #[cfg(feature = "as_ref")]
-impl AsRef<Vec<Person>> for PersonList {
-    fn as_ref(&self) -> &Vec<Person> {
+impl AsRef<Vec<PersonContainer>> for PersonList {
+    fn as_ref(&self) -> &Vec<PersonContainer> {
         &self.0
     }
 }

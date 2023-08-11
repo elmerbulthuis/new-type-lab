@@ -1,7 +1,13 @@
 use super::{PersonId, PersonName};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+pub struct Person {
+    pub id: PersonId,
+    pub name: PersonName,
+}
+
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 pub struct PersonContainer(Person);
 
 impl PersonContainer {
@@ -17,12 +23,6 @@ impl PersonContainer {
     fn validate(&self) -> bool {
         true
     }
-}
-
-#[derive(Serialize, Deserialize, Clone)]
-pub struct Person {
-    pub id: PersonId,
-    pub name: PersonName,
 }
 
 impl TryFrom<Person> for PersonContainer {
