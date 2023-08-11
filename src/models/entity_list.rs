@@ -1,17 +1,18 @@
+use crate::models::Entity;
+use crate::ValidationError;
 use serde::{Deserialize, Serialize};
 
-use super::entity::Entity;
-
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+#[serde(try_from = "Vec<Entity>")]
 pub struct EntityList(Vec<Entity>);
 
 impl EntityList {
-    fn new(value: Vec<Entity>) -> Result<Self, ()> {
+    fn new(value: Vec<Entity>) -> Result<Self, ValidationError> {
         let instance = Self(value);
         if instance.validate() {
             Ok(instance)
         } else {
-            Err(())
+            Err(ValidationError::new("EntityList"))
         }
     }
 
@@ -25,7 +26,7 @@ impl EntityList {
 }
 
 impl TryFrom<Vec<Entity>> for EntityList {
-    type Error = ();
+    type Error = ValidationError;
 
     fn try_from(value: Vec<Entity>) -> Result<Self, Self::Error> {
         Self::new(value)

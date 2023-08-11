@@ -1,17 +1,20 @@
 use std::str::FromStr;
 
-use serde::{de::Visitor, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+use crate::ValidationError;
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[serde(try_from = "String")]
 pub struct OrganizationType(String);
 
 impl OrganizationType {
-    fn new(value: String) -> Result<Self, ()> {
+    fn new(value: String) -> Result<Self, ValidationError> {
         let instance = Self(value);
         if instance.validate() {
             Ok(instance)
         } else {
-            Err(())
+            Err(ValidationError::new("EntityList"))
         }
     }
 
@@ -24,17 +27,8 @@ impl OrganizationType {
     }
 }
 
-impl<'de> Deserialize<'de> for OrganizationType {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        deserializer.deserialize_string(OrganizationTypeVisitor)
-    }
-}
-
 impl TryFrom<String> for OrganizationType {
-    type Error = ();
+    type Error = ValidationError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         Self::new(value)
@@ -48,7 +42,7 @@ impl From<OrganizationType> for String {
 }
 
 impl FromStr for OrganizationType {
-    type Err = ();
+    type Err = ValidationError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Self::new(s.to_string())
@@ -74,25 +68,6 @@ impl std::ops::Deref for OrganizationType {
 impl AsRef<str> for OrganizationType {
     fn as_ref(&self) -> &str {
         self.0.as_str()
-    }
-}
-
-struct OrganizationTypeVisitor;
-
-impl<'de> Visitor<'de> for OrganizationTypeVisitor {
-    type Value = OrganizationType;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("expecting entity name")
-    }
-
-    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        let v = v.to_string();
-        v.try_into()
-            .map_err(|_| E::custom("entity name deserialization failed"))
     }
 }
 

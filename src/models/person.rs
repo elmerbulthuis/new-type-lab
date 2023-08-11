@@ -1,3 +1,5 @@
+use crate::ValidationError;
+
 use super::{EntityId, EntityName, PersonType};
 use serde::{Deserialize, Serialize};
 
@@ -9,15 +11,16 @@ pub struct Person {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+#[serde(try_from = "Person")]
 pub struct PersonContainer(Person);
 
 impl PersonContainer {
-    fn new(value: Person) -> Result<Self, ()> {
+    fn new(value: Person) -> Result<Self, ValidationError> {
         let instance = Self(value);
         if instance.validate() {
             Ok(instance)
         } else {
-            Err(())
+            Err(ValidationError::new("Person"))
         }
     }
 
@@ -27,7 +30,7 @@ impl PersonContainer {
 }
 
 impl TryFrom<Person> for PersonContainer {
-    type Error = ();
+    type Error = ValidationError;
 
     fn try_from(value: Person) -> Result<Self, Self::Error> {
         Self::new(value)

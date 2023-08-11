@@ -1,3 +1,5 @@
+use crate::ValidationError;
+
 use super::{EntityId, EntityName, OrganizationType};
 use serde::{Deserialize, Serialize};
 
@@ -9,15 +11,16 @@ pub struct Organization {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+#[serde(try_from = "Organization")]
 pub struct OrganizationContainer(Organization);
 
 impl OrganizationContainer {
-    fn new(value: Organization) -> Result<Self, ()> {
+    fn new(value: Organization) -> Result<Self, ValidationError> {
         let instance = Self(value);
         if instance.validate() {
             Ok(instance)
         } else {
-            Err(())
+            Err(ValidationError::new("EntityList"))
         }
     }
 
@@ -27,7 +30,7 @@ impl OrganizationContainer {
 }
 
 impl TryFrom<Organization> for OrganizationContainer {
-    type Error = ();
+    type Error = ValidationError;
 
     fn try_from(value: Organization) -> Result<Self, Self::Error> {
         Self::new(value)

@@ -1,17 +1,18 @@
+use crate::ValidationError;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
-use serde::{de::Visitor, Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[serde(try_from = "usize")]
 pub struct EntityId(usize);
 
 impl EntityId {
-    fn new(value: usize) -> Result<Self, ()> {
+    fn new(value: usize) -> Result<Self, ValidationError> {
         let instance = Self(value);
         if instance.validate() {
             Ok(instance)
         } else {
-            Err(())
+            Err(ValidationError::new("EntityId"))
         }
     }
 
@@ -24,17 +25,8 @@ impl EntityId {
     }
 }
 
-impl<'de> Deserialize<'de> for EntityId {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        deserializer.deserialize_u64(EntityIdVisitor)
-    }
-}
-
 impl TryFrom<usize> for EntityId {
-    type Error = ();
+    type Error = ValidationError;
 
     fn try_from(value: usize) -> Result<Self, Self::Error> {
         Self::new(value)
@@ -48,10 +40,12 @@ impl From<EntityId> for usize {
 }
 
 impl FromStr for EntityId {
-    type Err = ();
+    type Err = ValidationError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let value = s.parse().map_err(|_error| ())?;
+        let value = s
+            .parse()
+            .map_err(|_error| ValidationError::new("EntityId"))?;
         Self::new(value)
     }
 }
@@ -75,28 +69,6 @@ impl std::ops::Deref for EntityId {
 impl AsRef<usize> for EntityId {
     fn as_ref(&self) -> &usize {
         &self.0
-    }
-}
-
-struct EntityIdVisitor;
-
-impl<'de> Visitor<'de> for EntityIdVisitor {
-    type Value = EntityId;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("expecting entity id")
-    }
-
-    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        let v: usize = v
-            .try_into()
-            .map_err(|_| E::custom("entity name deserialization failed"))?;
-
-        v.try_into()
-            .map_err(|_| E::custom("entity name deserialization failed"))
     }
 }
 
