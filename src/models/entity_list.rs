@@ -68,6 +68,8 @@ mod test {
                 r#type: "person".parse().unwrap(),
                 id: 1.try_into().unwrap(),
                 name: "abc".parse().unwrap(),
+                organization: None,
+                parent: None,
             }
             .try_into()
             .unwrap(),
